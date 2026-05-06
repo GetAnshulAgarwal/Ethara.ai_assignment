@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TeamTask</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f5f5;
+    --surface: #ffffff;
+    --border: #e0e0e0;
+    --text: #1a1a1a;
+    --text-muted: #666;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --danger: #dc2626;
+    --success: #16a34a;
+    --warning: #d97706;
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+
+  /* ── Layout ── */
+  #app { display: flex; min-height: 100vh; }
+  #sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100; }
+  #main { flex: 1; margin-left: 220px; display: flex; flex-direction: column; }
+  #topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+  #content { padding: 24px; flex: 1; max-width: 1100px; }
+
+  /* ── Auth Screen ── */
+  #auth-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg); }
+  .auth-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; width: 100%; max-width: 380px; box-shadow: var(--shadow); }
+  .auth-box h1 { font-size: 22px; margin-bottom: 4px; }
+  .auth-box p { color: var(--text-muted); margin-bottom: 24px; }
+
+  /* ── Sidebar ── */
+  .sidebar-logo { padding: 16px; font-size: 17px; font-weight: 700; color: var(--primary); border-bottom: 1px solid var(--border); }
+  .sidebar-section { padding: 12px 8px 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 600; }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--radius); cursor: pointer; color: var(--text); font-size: 14px; margin: 1px 8px; }
+  .nav-item:hover { background: var(--bg); }
+  .nav-item.active { background: #eff6ff; color: var(--primary); font-weight: 500; }
+  .sidebar-bottom { margin-top: auto; padding: 12px; border-top: 1px solid var(--border); }
+  .user-info { font-size: 13px; padding: 4px 0 8px; color: var(--text-muted); }
+  .user-info strong { color: var(--text); display: block; }
+
+  /* ── Forms ── */
+  .form-group { margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+  input, textarea, select {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+    border-radius: var(--radius); font-size: 14px; background: var(--surface);
+    color: var(--text); outline: none; transition: border-color 0.15s;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--primary); }
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* ── Buttons ── */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-danger  { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: #b91c1c; }
+  .btn-ghost   { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--bg); }
+  .btn-sm { padding: 5px 10px; font-size: 13px; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-full { width: 100%; justify-content: center; }
+
+  /* ── Cards ── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .card h2 { font-size: 16px; font-weight: 600; }
+
+  /* ── Tables ── */
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 10px 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); border-bottom: 2px solid var(--border); }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafafa; }
+
+  /* ── Badges ── */
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+  .badge-todo        { background: #f3f4f6; color: #374151; }
+  .badge-in_progress { background: #dbeafe; color: #1d4ed8; }
+  .badge-done        { background: #dcfce7; color: #15803d; }
+  .badge-overdue     { background: #fee2e2; color: #dc2626; }
+  .badge-admin       { background: #fef3c7; color: #92400e; }
+  .badge-member      { background: #f3f4f6; color: #374151; }
+  .badge-high        { background: #fee2e2; color: #dc2626; }
+  .badge-medium      { background: #fef9c3; color: #854d0e; }
+  .badge-low         { background: #f3f4f6; color: #374151; }
+
+  /* ── Stats Row ── */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+  .stat-card .number { font-size: 28px; font-weight: 700; line-height: 1; }
+  .stat-card .label  { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .stat-overdue .number { color: var(--danger); }
+
+  /* ── Modal ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .modal { background: var(--surface); border-radius: var(--radius); padding: 24px; width: 100%; max-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+  .modal h2 { font-size: 18px; margin-bottom: 20px; }
+  .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+  /* ── Misc ── */
+  .error-msg { background: #fee2e2; color: #dc2626; padding: 8px 12px; border-radius: var(--radius); font-size: 13px; margin-bottom: 12px; }
+  .success-msg { background: #dcfce7; color: #15803d; padding: 8px 12px; border-radius: var(--radius); font-size: 13px; margin-bottom: 12px; }
+  .empty-state { text-align: center; padding: 40px; color: var(--text-muted); }
+  .flex { display: flex; }
+  .gap-8 { gap: 8px; }
+  .page-title { font-size: 20px; font-weight: 700; }
+  .tab-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
+  .tab { padding: 8px 16px; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; margin-bottom: -2px; font-size: 14px; }
+  .tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 500; }
+  .filter-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-row select { width: auto; }
+  a.link { color: var(--primary); text-decoration: none; cursor: pointer; }
+  a.link:hover { text-decoration: underline; }
+  .hidden { display: none !important; }
+  .overdue-row td { color: var(--danger); }
+  #toast { position: fixed; bottom: 24px; right: 24px; z-index: 999; }
+  .toast-item { background: #1a1a1a; color: #fff; padding: 10px 16px; border-radius: var(--radius); margin-top: 8px; font-size: 13px; animation: slideIn 0.2s ease; }
+  @keyframes slideIn { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+</style>
+</head>
+<body>
+
+<!-- ── AUTH SCREEN ─────────────────────────────────────────────────────────── -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <h1>TeamTask</h1>
+    <p id="auth-subtitle">Sign in to your account</p>
+    <div id="auth-error" class="error-msg hidden"></div>
+
+    <div id="signup-fields" class="hidden">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input id="auth-name" type="text" placeholder="Your name"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input id="auth-email" type="email" placeholder="you@example.com"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input id="auth-password" type="password" placeholder="••••••••"/>
+    </div>
+
+    <button class="btn btn-primary btn-full" id="auth-submit-btn" onclick="submitAuth()">Sign In</button>
+    <p style="text-align:center; margin-top:16px; color:var(--text-muted); font-size:13px;">
+      <span id="auth-toggle-text">Don't have an account?</span>
+      <a class="link" onclick="toggleAuthMode()" id="auth-toggle-link"> Sign up</a>
+    </p>
+  </div>
+</div>
+
+<!-- ── MAIN APP ────────────────────────────────────────────────────────────── -->
+<div id="app" class="hidden">
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="sidebar-logo">⚡ TeamTask</div>
+    <div style="padding: 8px;">
+      <div class="sidebar-section">Navigation</div>
+      <div class="nav-item active" id="nav-dashboard" onclick="navigate('dashboard')">
+        📊 Dashboard
+      </div>
+      <div class="nav-item" id="nav-projects" onclick="navigate('projects')">
+        📁 Projects
+      </div>
+      <div class="sidebar-section" style="margin-top:8px;">My Projects</div>
+      <div id="sidebar-projects"></div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-info">
+        <strong id="sidebar-user-name">—</strong>
+        <span id="sidebar-user-email"></span>
+      </div>
+      <button class="btn btn-ghost btn-sm btn-full" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div id="main">
+    <div id="topbar">
+      <span class="page-title" id="page-title">Dashboard</span>
+      <div class="flex gap-8" id="topbar-actions"></div>
+    </div>
+    <div id="content"></div>
+  </div>
+</div>
+
+<!-- ── MODAL ──────────────────────────────────────────────────────────────── -->
+<div id="modal-overlay" class="modal-overlay hidden" onclick="closeModal(event)">
+  <div class="modal" id="modal-box">
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════════════════
+const API = '/api';
+let state = {
+  user: null,
+  accessToken: null,
+  refreshToken: null,
+  authMode: 'login',
+  currentPage: 'dashboard',
+  currentProjectId: null,
+  projects: [],
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════════════════════════════════════════
+function saveSession() {
+  sessionStorage.setItem('ttm_access', state.accessToken);
+  sessionStorage.setItem('ttm_refresh', state.refreshToken);
+  sessionStorage.setItem('ttm_user', JSON.stringify(state.user));
+}
+function loadSession() {
+  state.accessToken  = sessionStorage.getItem('ttm_access');
+  state.refreshToken = sessionStorage.getItem('ttm_refresh');
+  const u = sessionStorage.getItem('ttm_user');
+  state.user = u ? JSON.parse(u) : null;
+}
+function clearSession() {
+  sessionStorage.removeItem('ttm_access');
+  sessionStorage.removeItem('ttm_refresh');
+  sessionStorage.removeItem('ttm_user');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// API
+// ══════════════════════════════════════════════════════════════════════════════
+async function api(method, path, body) {
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+  };
+  if (state.accessToken) opts.headers['Authorization'] = `Bearer ${state.accessToken}`;
+  if (body) opts.body = JSON.stringify(body);
+
+  let res = await fetch(API + path, opts);
+
+  if (res.status === 401 && state.refreshToken) {
+    const refreshed = await refreshAccessToken();
+    if (refreshed) {
+      opts.headers['Authorization'] = `Bearer ${state.accessToken}`;
+      res = await fetch(API + path, opts);
+    } else {
+      showAuth();
+      return null;
+    }
+  }
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw data;
+  return data;
+}
+
+async function refreshAccessToken() {
+  try {
+    const res = await fetch(API + '/auth/refresh', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken: state.refreshToken }),
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    state.accessToken  = data.accessToken;
+    state.refreshToken = data.refreshToken;
+    saveSession();
+    return true;
+  } catch { return false; }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════════════════════════════════
+function toggleAuthMode() {
+  state.authMode = state.authMode === 'login' ? 'signup' : 'login';
+  const isSignup = state.authMode === 'signup';
+  document.getElementById('signup-fields').classList.toggle('hidden', !isSignup);
+  document.getElementById('auth-subtitle').textContent = isSignup ? 'Create your account' : 'Sign in to your account';
+  document.getElementById('auth-submit-btn').textContent = isSignup ? 'Sign Up' : 'Sign In';
+  document.getElementById('auth-toggle-text').textContent = isSignup ? 'Already have an account?' : "Don't have an account?";
+  document.getElementById('auth-toggle-link').textContent = isSignup ? ' Sign in' : ' Sign up';
+  document.getElementById('auth-error').classList.add('hidden');
+}
+
+async function submitAuth() {
+  const email    = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const errEl    = document.getElementById('auth-error');
+  errEl.classList.add('hidden');
+
+  if (!email || !password) { errEl.textContent = 'Email and password are required.'; errEl.classList.remove('hidden'); return; }
+
+  const btn = document.getElementById('auth-submit-btn');
+  btn.disabled = true;
+
+  try {
+    let data;
+    if (state.authMode === 'login') {
+      data = await api('POST', '/auth/login', { email, password });
+    } else {
+      const name = document.getElementById('auth-name').value.trim();
+      if (!name) { errEl.textContent = 'Name is required.'; errEl.classList.remove('hidden'); btn.disabled = false; return; }
+      data = await api('POST', '/auth/signup', { name, email, password });
+    }
+    state.accessToken  = data.accessToken;
+    state.refreshToken = data.refreshToken;
+    state.user         = data.user;
+    saveSession();
+    showApp();
+  } catch (err) {
+    errEl.textContent = err.error || (err.errors && err.errors[0]?.msg) || 'Authentication failed.';
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function logout() {
+  try { await api('POST', '/auth/logout', { refreshToken: state.refreshToken }); } catch {}
+  clearSession();
+  state.user = state.accessToken = state.refreshToken = null;
+  showAuth();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// APP SHELL
+// ══════════════════════════════════════════════════════════════════════════════
+function showAuth() {
+  document.getElementById('auth-screen').classList.remove('hidden');
+  document.getElementById('app').classList.add('hidden');
+}
+
+function showApp() {
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('sidebar-user-name').textContent  = state.user.name;
+  document.getElementById('sidebar-user-email').textContent = state.user.email;
+  navigate('dashboard');
+  loadSidebarProjects();
+}
+
+function navigate(page, projectId) {
+  state.currentPage = page;
+  state.currentProjectId = projectId || null;
+
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  if (page === 'dashboard') document.getElementById('nav-dashboard')?.classList.add('active');
+  if (page === 'projects')  document.getElementById('nav-projects')?.classList.add('active');
+  if (projectId) document.getElementById('nav-proj-' + projectId)?.classList.add('active');
+
+  if (page === 'dashboard')    renderDashboard();
+  else if (page === 'projects') renderProjects();
+  else if (page === 'project')  renderProject(projectId);
+}
+
+async function loadSidebarProjects() {
+  try {
+    const data = await api('GET', '/projects');
+    state.projects = data.projects || [];
+    const el = document.getElementById('sidebar-projects');
+    el.innerHTML = state.projects.slice(0, 8).map(p => `
+      <div class="nav-item" id="nav-proj-${p.id}" onclick="navigate('project', ${p.id})">
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(p.name)}</span>
+        ${p.my_role === 'admin' ? '<span class="badge badge-admin" style="margin-left:auto;font-size:10px">A</span>' : ''}
+      </div>
+    `).join('');
+  } catch {}
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════════════════════════════
+async function renderDashboard() {
+  document.getElementById('page-title').textContent = 'Dashboard';
+  document.getElementById('topbar-actions').innerHTML = '';
+  const content = document.getElementById('content');
+  content.innerHTML = '<p style="color:var(--text-muted)">Loading…</p>';
+
+  try {
+    const data = await api('GET', '/tasks/dashboard');
+    const s = data.summary;
+    content.innerHTML = `
+      <div class="stats-row">
+        <div class="stat-card"><div class="number">${s.total}</div><div class="label">Total Tasks</div></div>
+        <div class="stat-card"><div class="number">${s.todo}</div><div class="label">To Do</div></div>
+        <div class="stat-card"><div class="number" style="color:var(--primary)">${s.in_progress}</div><div class="label">In Progress</div></div>
+        <div class="stat-card"><div class="number" style="color:var(--success)">${s.done}</div><div class="label">Done</div></div>
+        <div class="stat-card stat-overdue"><div class="number">${s.overdue}</div><div class="label">Overdue</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>My Tasks</h2></div>
+        ${data.tasks.length === 0
+          ? '<div class="empty-state">No tasks assigned to you yet.</div>'
+          : `<table>
+              <thead><tr><th>Task</th><th>Project</th><th>Status</th><th>Priority</th><th>Due Date</th></tr></thead>
+              <tbody>${data.tasks.map(t => {
+                const overdue = t.status !== 'done' && t.due_date && new Date(t.due_date) < new Date();
+                return `<tr class="${overdue ? 'overdue-row' : ''}">
+                  <td>${esc(t.title)}</td>
+                  <td><a class="link" onclick="navigate('project', ${t.project_id})">${esc(t.project_name)}</a></td>
+                  <td>${statusBadge(t.status)}</td>
+                  <td>${priorityBadge(t.priority)}</td>
+                  <td>${t.due_date ? formatDate(t.due_date) + (overdue ? ' ⚠️' : '') : '—'}</td>
+                </tr>`;
+              }).join('')}</tbody>
+             </table>`}
+      </div>`;
+  } catch (err) {
+    content.innerHTML = `<div class="error-msg">${err.error || 'Failed to load dashboard'}</div>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PROJECTS LIST
+// ══════════════════════════════════════════════════════════════════════════════
+async function renderProjects() {
+  document.getElementById('page-title').textContent = 'Projects';
+  document.getElementById('topbar-actions').innerHTML = `<button class="btn btn-primary btn-sm" onclick="openCreateProjectModal()">+ New Project</button>`;
+  const content = document.getElementById('content');
+  content.innerHTML = '<p style="color:var(--text-muted)">Loading…</p>';
+
+  try {
+    const data = await api('GET', '/projects');
+    state.projects = data.projects || [];
+    loadSidebarProjects();
+
+    if (state.projects.length === 0) {
+      content.innerHTML = `<div class="empty-state"><p>No projects yet.</p><br><button class="btn btn-primary" onclick="openCreateProjectModal()">Create your first project</button></div>`;
+      return;
+    }
+
+    content.innerHTML = `
+      <div class="card">
+        <table>
+          <thead><tr><th>Project</th><th>Role</th><th>Members</th><th>Tasks</th><th>Overdue</th><th></th></tr></thead>
+          <tbody>${state.projects.map(p => `
+            <tr>
+              <td><a class="link" onclick="navigate('project', ${p.id})">${esc(p.name)}</a>
+                ${p.description ? `<div style="color:var(--text-muted);font-size:12px">${esc(p.description.substring(0, 60))}${p.description.length > 60 ? '…' : ''}</div>` : ''}
+              </td>
+              <td>${roleBadge(p.my_role)}</td>
+              <td>${p.member_count}</td>
+              <td>${p.task_count}</td>
+              <td>${p.overdue_count > 0 ? `<span style="color:var(--danger);font-weight:600">${p.overdue_count}</span>` : '0'}</td>
+              <td><button class="btn btn-ghost btn-sm" onclick="navigate('project', ${p.id})">Open →</button></td>
+            </tr>
+          `).join('')}</tbody>
+        </table>
+      </div>`;
+  } catch (err) {
+    content.innerHTML = `<div class="error-msg">${err.error || 'Failed to load projects'}</div>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PROJECT DETAIL
+// ══════════════════════════════════════════════════════════════════════════════
+async function renderProject(projectId) {
+  document.getElementById('page-title').textContent = 'Loading…';
+  document.getElementById('topbar-actions').innerHTML = '';
+  const content = document.getElementById('content');
+  content.innerHTML = '<p style="color:var(--text-muted)">Loading…</p>';
+
+  try {
+    const [projData, taskData] = await Promise.all([
+      api('GET', `/projects/${projectId}`),
+      api('GET', `/tasks/project/${projectId}`),
+    ]);
+
+    const { project, members } = projData;
+    const isAdmin = project.my_role === 'admin';
+    document.getElementById('page-title').textContent = project.name;
+    document.getElementById('topbar-actions').innerHTML = `
+      <button class="btn btn-primary btn-sm" onclick="openCreateTaskModal(${projectId}, ${JSON.stringify(members).replace(/"/g,'&quot;')})">+ New Task</button>
+      ${isAdmin ? `<button class="btn btn-ghost btn-sm" onclick="openManageMembersModal(${projectId}, ${JSON.stringify(members).replace(/"/g,'&quot;')})">Members (${members.length})</button>` : `<button class="btn btn-ghost btn-sm" onclick="openManageMembersModal(${projectId}, ${JSON.stringify(members).replace(/"/g,'&quot;')})">Members (${members.length})</button>`}
+    `;
+
+    const s = taskData.summary;
+    content.innerHTML = `
+      <div class="stats-row">
+        <div class="stat-card"><div class="number">${s.todo}</div><div class="label">To Do</div></div>
+        <div class="stat-card"><div class="number" style="color:var(--primary)">${s.in_progress}</div><div class="label">In Progress</div></div>
+        <div class="stat-card"><div class="number" style="color:var(--success)">${s.done}</div><div class="label">Done</div></div>
+        <div class="stat-card stat-overdue"><div class="number">${s.overdue}</div><div class="label">Overdue</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>Tasks</h2>
+          <div class="filter-row" style="margin-bottom:0">
+            <select id="filter-status" onchange="filterTasks(${projectId})" style="width:120px">
+              <option value="">All Status</option>
+              <option value="todo">To Do</option>
+              <option value="in_progress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+            <select id="filter-priority" onchange="filterTasks(${projectId})" style="width:120px">
+              <option value="">All Priority</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+        </div>
+        <div id="tasks-table">${renderTasksTable(taskData.tasks, isAdmin, projectId, members)}</div>
+      </div>`;
+  } catch (err) {
+    content.innerHTML = `<div class="error-msg">${err.error || 'Failed to load project'}</div>`;
+  }
+}
+
+function renderTasksTable(tasks, isAdmin, projectId, members) {
+  if (tasks.length === 0) return '<div class="empty-state">No tasks yet. Create one!</div>';
+  return `<table>
+    <thead><tr><th>Title</th><th>Assigned To</th><th>Status</th><th>Priority</th><th>Due Date</th><th></th></tr></thead>
+    <tbody>${tasks.map(t => {
+      const overdue = t.status !== 'done' && t.due_date && new Date(t.due_date) < new Date();
+      const canEdit = isAdmin || t.assigned_to === state.user.id || t.created_by === state.user.id;
+      return `<tr class="${overdue ? 'overdue-row' : ''}">
+        <td>${esc(t.title)}${t.description ? `<div style="color:var(--text-muted);font-size:12px">${esc(t.description.substring(0,60))}…</div>` : ''}</td>
+        <td>${t.assigned_to_name ? esc(t.assigned_to_name) : '<span style="color:var(--text-muted)">Unassigned</span>'}</td>
+        <td>${statusBadge(t.status)}</td>
+        <td>${priorityBadge(t.priority)}</td>
+        <td>${t.due_date ? formatDate(t.due_date) + (overdue ? ' ⚠️' : '') : '—'}</td>
+        <td>
+          ${canEdit ? `<button class="btn btn-ghost btn-sm" onclick='openEditTaskModal(${JSON.stringify(t)}, ${isAdmin}, ${projectId}, ${JSON.stringify(members)})'>Edit</button>` : ''}
+          ${isAdmin ? `<button class="btn btn-sm" style="background:#fee2e2;color:var(--danger);margin-left:4px" onclick="deleteTask(${t.id}, ${projectId})">Del</button>` : ''}
+        </td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+async function filterTasks(projectId) {
+  const status   = document.getElementById('filter-status').value;
+  const priority = document.getElementById('filter-priority').value;
+  let qs = '';
+  if (status)   qs += `status=${status}&`;
+  if (priority) qs += `priority=${priority}&`;
+
+  try {
+    const data = await api('GET', `/tasks/project/${projectId}?${qs}`);
+    const projData = await api('GET', `/projects/${projectId}`);
+    document.getElementById('tasks-table').innerHTML = renderTasksTable(data.tasks, projData.project.my_role === 'admin', projectId, projData.members);
+  } catch {}
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════════════════════════════════════════
+function openModal(html) {
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.add('hidden');
+  }
+}
+
+// ── Create Project ────────────────────────────────────────────────────────────
+function openCreateProjectModal() {
+  openModal(`
+    <h2>New Project</h2>
+    <div id="modal-err" class="error-msg hidden"></div>
+    <div class="form-group"><label>Name *</label><input id="m-name" type="text" placeholder="Project name"/></div>
+    <div class="form-group"><label>Description</label><textarea id="m-desc" placeholder="Optional description"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="createProject()">Create</button>
+    </div>
+  `);
+}
+async function createProject() {
+  const name = document.getElementById('m-name').value.trim();
+  const desc = document.getElementById('m-desc').value.trim();
+  const errEl = document.getElementById('modal-err');
+  if (!name) { errEl.textContent = 'Name is required.'; errEl.classList.remove('hidden'); return; }
+  try {
+    await api('POST', '/projects', { name, description: desc });
+    closeModal();
+    toast('Project created!');
+    loadSidebarProjects();
+    renderProjects();
+  } catch (err) {
+    errEl.textContent = err.error || 'Failed to create project.';
+    errEl.classList.remove('hidden');
+  }
+}
+
+// ── Create Task ───────────────────────────────────────────────────────────────
+function openCreateTaskModal(projectId, members) {
+  const memberOptions = members.map(m => `<option value="${m.user_id}">${esc(m.name)} (${esc(m.email)})</option>`).join('');
+  openModal(`
+    <h2>New Task</h2>
+    <div id="modal-err" class="error-msg hidden"></div>
+    <div class="form-group"><label>Title *</label><input id="m-title" type="text" placeholder="Task title"/></div>
+    <div class="form-group"><label>Description</label><textarea id="m-desc" placeholder="Optional details"></textarea></div>
+    <div class="form-group"><label>Assigned To</label>
+      <select id="m-assign"><option value="">Unassigned</option>${memberOptions}</select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group"><label>Status</label>
+        <select id="m-status">
+          <option value="todo">To Do</option>
+          <option value="in_progress">In Progress</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Priority</label>
+        <select id="m-priority">
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Due Date</label><input id="m-due" type="date"/></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="createTask(${projectId})">Create Task</button>
+    </div>
+  `);
+}
+async function createTask(projectId) {
+  const title     = document.getElementById('m-title').value.trim();
+  const desc      = document.getElementById('m-desc').value.trim();
+  const assignTo  = document.getElementById('m-assign').value;
+  const status    = document.getElementById('m-status').value;
+  const priority  = document.getElementById('m-priority').value;
+  const dueDate   = document.getElementById('m-due').value;
+  const errEl     = document.getElementById('modal-err');
+  if (!title) { errEl.textContent = 'Title is required.'; errEl.classList.remove('hidden'); return; }
+  try {
+    await api('POST', `/tasks/project/${projectId}`, {
+      title, description: desc || undefined,
+      assigned_to: assignTo ? parseInt(assignTo) : undefined,
+      status, priority, due_date: dueDate || undefined,
+    });
+    closeModal();
+    toast('Task created!');
+    renderProject(projectId);
+  } catch (err) {
+    errEl.textContent = err.error || 'Failed to create task.';
+    errEl.classList.remove('hidden');
+  }
+}
+
+// ── Edit Task ─────────────────────────────────────────────────────────────────
+function openEditTaskModal(task, isAdmin, projectId, members) {
+  const memberOptions = members.map(m => `<option value="${m.user_id}" ${task.assigned_to == m.user_id ? 'selected' : ''}>${esc(m.name)}</option>`).join('');
+  openModal(`
+    <h2>Edit Task</h2>
+    <div id="modal-err" class="error-msg hidden"></div>
+    <div class="form-group"><label>Title</label><input id="m-title" type="text" value="${esc(task.title)}"/></div>
+    <div class="form-group"><label>Description</label><textarea id="m-desc">${esc(task.description || '')}</textarea></div>
+    ${isAdmin ? `<div class="form-group"><label>Assigned To</label>
+      <select id="m-assign"><option value="">Unassigned</option>${memberOptions}</select>
+    </div>` : ''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group"><label>Status</label>
+        <select id="m-status">
+          <option value="todo" ${task.status==='todo'?'selected':''}>To Do</option>
+          <option value="in_progress" ${task.status==='in_progress'?'selected':''}>In Progress</option>
+          <option value="done" ${task.status==='done'?'selected':''}>Done</option>
+        </select>
+      </div>
+      ${isAdmin ? `<div class="form-group"><label>Priority</label>
+        <select id="m-priority">
+          <option value="low" ${task.priority==='low'?'selected':''}>Low</option>
+          <option value="medium" ${task.priority==='medium'?'selected':''}>Medium</option>
+          <option value="high" ${task.priority==='high'?'selected':''}>High</option>
+        </select>
+      </div>` : ''}
+    </div>
+    ${isAdmin ? `<div class="form-group"><label>Due Date</label><input id="m-due" type="date" value="${task.due_date ? task.due_date.substring(0,10) : ''}"/></div>` : ''}
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="updateTask(${task.id}, ${projectId}, ${isAdmin})">Save</button>
+    </div>
+  `);
+}
+async function updateTask(taskId, projectId, isAdmin) {
+  const errEl = document.getElementById('modal-err');
+  const payload = {};
+  const titleEl = document.getElementById('m-title');
+  if (titleEl) payload.title = titleEl.value.trim();
+  const descEl = document.getElementById('m-desc');
+  if (descEl) payload.description = descEl.value.trim();
+  const statusEl = document.getElementById('m-status');
+  if (statusEl) payload.status = statusEl.value;
+  if (isAdmin) {
+    const assignEl = document.getElementById('m-assign');
+    if (assignEl) payload.assigned_to = assignEl.value ? parseInt(assignEl.value) : null;
+    const prioEl = document.getElementById('m-priority');
+    if (prioEl) payload.priority = prioEl.value;
+    const dueEl = document.getElementById('m-due');
+    if (dueEl) payload.due_date = dueEl.value || null;
+  }
+  try {
+    await api('PUT', `/tasks/${taskId}`, payload);
+    closeModal();
+    toast('Task updated!');
+    renderProject(projectId);
+    if (state.currentPage === 'dashboard') renderDashboard();
+  } catch (err) {
+    errEl.textContent = err.error || 'Failed to update task.';
+    errEl.classList.remove('hidden');
+  }
+}
+
+async function deleteTask(taskId, projectId) {
+  if (!confirm('Delete this task?')) return;
+  try {
+    await api('DELETE', `/tasks/${taskId}`);
+    toast('Task deleted.');
+    renderProject(projectId);
+  } catch (err) {
+    toast(err.error || 'Delete failed.');
+  }
+}
+
+// ── Members Modal ─────────────────────────────────────────────────────────────
+function openManageMembersModal(projectId, members) {
+  const renderList = () => members.map(m => `
+    <tr>
+      <td>${esc(m.name)}<div style="color:var(--text-muted);font-size:12px">${esc(m.email)}</div></td>
+      <td>${roleBadge(m.role)}</td>
+      <td>
+        ${m.user_id !== state.user.id ? `<button class="btn btn-sm" style="background:#fee2e2;color:var(--danger)" onclick="removeMember(${projectId}, ${m.user_id})">Remove</button>` : '<span style="color:var(--text-muted);font-size:12px">You</span>'}
+      </td>
+    </tr>
+  `).join('');
+
+  openModal(`
+    <h2>Team Members</h2>
+    <div id="modal-err" class="error-msg hidden"></div>
+    <table style="margin-bottom:16px">
+      <thead><tr><th>Member</th><th>Role</th><th></th></tr></thead>
+      <tbody id="members-list">${renderList()}</tbody>
+    </table>
+    <hr style="margin-bottom:16px;border:none;border-top:1px solid var(--border)"/>
+    <h2 style="font-size:15px;margin-bottom:12px">Add Member</h2>
+    <div class="form-group"><label>Email Address</label><input id="m-email" type="email" placeholder="user@example.com"/></div>
+    <div class="form-group"><label>Role</label>
+      <select id="m-role"><option value="member">Member</option><option value="admin">Admin</option></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+      <button class="btn btn-primary" onclick="addMember(${projectId})">Add Member</button>
+    </div>
+  `);
+}
+
+async function addMember(projectId) {
+  const email = document.getElementById('m-email').value.trim();
+  const role  = document.getElementById('m-role').value;
+  const errEl = document.getElementById('modal-err');
+  if (!email) { errEl.textContent = 'Email is required.'; errEl.classList.remove('hidden'); return; }
+  try {
+    const data = await api('POST', `/projects/${projectId}/members`, { email, role });
+    toast(`${data.member.name} added!`);
+    closeModal();
+    renderProject(projectId);
+  } catch (err) {
+    errEl.textContent = err.error || 'Failed to add member.';
+    errEl.classList.remove('hidden');
+  }
+}
+
+async function removeMember(projectId, userId) {
+  if (!confirm('Remove this member?')) return;
+  try {
+    await api('DELETE', `/projects/${projectId}/members/${userId}`);
+    toast('Member removed.');
+    closeModal();
+    renderProject(projectId);
+  } catch (err) {
+    toast(err.error || 'Failed to remove member.');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════════════════════════════════════════
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function formatDate(d) {
+  return new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+}
+function statusBadge(s) {
+  const labels = { todo: 'To Do', in_progress: 'In Progress', done: 'Done' };
+  return `<span class="badge badge-${s}">${labels[s] || s}</span>`;
+}
+function priorityBadge(p) {
+  return `<span class="badge badge-${p}">${p.charAt(0).toUpperCase()+p.slice(1)}</span>`;
+}
+function roleBadge(r) {
+  return `<span class="badge badge-${r}">${r.charAt(0).toUpperCase()+r.slice(1)}</span>`;
+}
+function toast(msg) {
+  const el = document.createElement('div');
+  el.className = 'toast-item';
+  el.textContent = msg;
+  document.getElementById('toast').appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ── Enter key on auth form ────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !document.getElementById('auth-screen').classList.contains('hidden')) {
+    submitAuth();
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════════════════
+(function init() {
+  loadSession();
+  if (state.user && state.accessToken) {
+    showApp();
+  } else {
+    showAuth();
+  }
+})();
+</script>
+</body>
+</html>
