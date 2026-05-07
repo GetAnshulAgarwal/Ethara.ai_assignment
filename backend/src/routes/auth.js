@@ -6,10 +6,10 @@ const { body, validationResult } = require('express-validator');
 const pool = require('../config/db');
 const { authenticate } = require('../middleware/auth');
 
-// ─── Helpers  
+// ─── Helpers
 const generateAccessToken = (user) =>
   jwt.sign(
-    { id: user.id, email: user.email, name: user.name },
+    { id: user.id, email: user.email, name: user.name, role: user.role }, // ← added role
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_ACCESS_EXPIRES || '15m' }
   );
@@ -21,7 +21,7 @@ const generateRefreshToken = (user) =>
     { expiresIn: process.env.JWT_REFRESH_EXPIRES || '7d' }
   );
 
-// ─── POST /api/auth/signup  
+// ─── POST /api/auth/signup
 router.post(
   '/signup',
   [
@@ -30,6 +30,10 @@ router.post(
     body('password')
       .isLength({ min: 6 })
       .withMessage('Password must be at least 6 characters'),
+    body('role')                                                             // ← added
+      .optional()
+      .isIn(['admin', 'member'])
+      .withMessage('Role must be admin or member'),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -37,7 +41,7 @@ router.post(
       return res.status(422).json({ errors: errors.array() });
     }
 
-    const { name, email, password } = req.body;
+    const { name, email, password, role = 'member' } = req.body;           // ← added role
 
     try {
       // Check duplicate email
@@ -49,10 +53,10 @@ router.post(
       const passwordHash = await bcrypt.hash(password, 12);
 
       const { rows } = await pool.query(
-        `INSERT INTO users (name, email, password)
-         VALUES ($1, $2, $3)
-         RETURNING id, name, email, created_at`,
-        [name, email, passwordHash]
+        `INSERT INTO users (name, email, password, role)
+         VALUES ($1, $2, $3, $4)
+         RETURNING id, name, email, role, created_at`,                      // ← added role
+        [name, email, passwordHash, role]
       );
 
       const user = rows[0];
@@ -74,7 +78,7 @@ router.post(
   }
 );
 
-//  POST /api/auth/login 
+// ─── POST /api/auth/login
 router.post(
   '/login',
   [
@@ -91,7 +95,7 @@ router.post(
 
     try {
       const { rows } = await pool.query(
-        'SELECT id, name, email, password FROM users WHERE email = $1',
+        'SELECT id, name, email, password, role FROM users WHERE email = $1', // ← added role
         [email]
       );
 
@@ -125,7 +129,7 @@ router.post(
   }
 );
 
-// POST /api/auth/refresh
+// ─── POST /api/auth/refresh
 router.post('/refresh', async (req, res) => {
   const { refreshToken } = req.body;
 
@@ -136,10 +140,10 @@ router.post('/refresh', async (req, res) => {
   try {
     // Validate token exists in DB and is not expired
     const { rows } = await pool.query(
-      `SELECT rt.*, u.id as uid, u.name, u.email
+      `SELECT rt.*, u.id as uid, u.name, u.email, u.role
        FROM refresh_tokens rt
        JOIN users u ON u.id = rt.user_id
-       WHERE rt.token = $1 AND rt.expires_at > NOW()`,
+       WHERE rt.token = $1 AND rt.expires_at > NOW()`,                      // ← added u.role
       [refreshToken]
     );
 
@@ -150,7 +154,7 @@ router.post('/refresh', async (req, res) => {
     // Verify JWT signature
     jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
-    const user = { id: rows[0].uid, name: rows[0].name, email: rows[0].email };
+    const user = { id: rows[0].uid, name: rows[0].name, email: rows[0].email, role: rows[0].role }; // ← added role
     const newAccessToken = generateAccessToken(user);
     const newRefreshToken = generateRefreshToken(user);
 
@@ -169,7 +173,7 @@ router.post('/refresh', async (req, res) => {
   }
 });
 
-// ─── POST /api/auth/logout  
+// ─── POST /api/auth/logout
 router.post('/logout', authenticate, async (req, res) => {
   const { refreshToken } = req.body;
 
@@ -187,11 +191,11 @@ router.post('/logout', authenticate, async (req, res) => {
   }
 });
 
-// ─── GET /api/auth/me  ─────
+// ─── GET /api/auth/me
 router.get('/me', authenticate, async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT id, name, email, created_at FROM users WHERE id = $1',
+      'SELECT id, name, email, role, created_at FROM users WHERE id = $1', // ← added role
       [req.user.id]
     );
     if (rows.length === 0) return res.status(404).json({ error: 'User not found' });

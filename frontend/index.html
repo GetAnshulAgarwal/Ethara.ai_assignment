@@ -137,12 +137,31 @@
     <p id="auth-subtitle">Sign in to your account</p>
     <div id="auth-error" class="error-msg hidden"></div>
 
-    <div id="signup-fields" class="hidden">
-      <div class="form-group">
-        <label>Full Name</label>
-        <input id="auth-name" type="text" placeholder="Your name"/>
-      </div>
+<div id="signup-fields" class="hidden">
+  <div class="form-group">
+    <label>Full Name</label>
+    <input id="auth-name" type="text" placeholder="Your name"/>
+  </div>
+  <div class="form-group">
+    <label>I want to join as</label>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+      <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius);cursor:pointer;font-weight:400" id="role-admin-label">
+        <input type="radio" name="auth-role" id="role-admin" value="admin" style="width:auto;margin:0"/>
+        <span>
+          <strong style="display:block;font-size:13px">Admin</strong>
+          <span style="font-size:11px;color:var(--text-muted)">Create & manage projects</span>
+        </span>
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:2px solid var(--primary);border-radius:var(--radius);cursor:pointer;font-weight:400;background:#eff6ff" id="role-member-label">
+        <input type="radio" name="auth-role" id="role-member" value="member" checked style="width:auto;margin:0"/>
+        <span>
+          <strong style="display:block;font-size:13px">Member</strong>
+          <span style="font-size:11px;color:var(--text-muted)">Join & work on tasks</span>
+        </span>
+      </label>
     </div>
+  </div>
+</div>
 
     <div class="form-group">
       <label>Email</label>
@@ -179,9 +198,10 @@
     </div>
     <div class="sidebar-bottom">
       <div class="user-info">
-        <strong id="sidebar-user-name">—</strong>
-        <span id="sidebar-user-email"></span>
-      </div>
+  <strong id="sidebar-user-name">—</strong>
+  <span id="sidebar-user-email"></span>
+  <span id="sidebar-user-role" style="margin-top:4px;display:inline-block"></span>
+</div>
       <button class="btn btn-ghost btn-sm btn-full" onclick="logout()">Sign Out</button>
     </div>
   </div>
@@ -298,6 +318,7 @@ function toggleAuthMode() {
   document.getElementById('auth-toggle-text').textContent = isSignup ? 'Already have an account?' : "Don't have an account?";
   document.getElementById('auth-toggle-link').textContent = isSignup ? ' Sign in' : ' Sign up';
   document.getElementById('auth-error').classList.add('hidden');
+  if (isSignup) setTimeout(setupRoleToggle, 0);
 }
 
 async function submitAuth() {
@@ -317,8 +338,10 @@ async function submitAuth() {
       data = await api('POST', '/auth/login', { email, password });
     } else {
       const name = document.getElementById('auth-name').value.trim();
-      if (!name) { errEl.textContent = 'Name is required.'; errEl.classList.remove('hidden'); btn.disabled = false; return; }
-      data = await api('POST', '/auth/signup', { name, email, password });
+if (!name) { errEl.textContent = 'Name is required.'; errEl.classList.remove('hidden'); btn.disabled = false; return; }
+const roleEl = document.querySelector('input[name="auth-role"]:checked');
+const role = roleEl ? roleEl.value : 'member';
+data = await api('POST', '/auth/signup', { name, email, password, role });
     }
     state.accessToken  = data.accessToken;
     state.refreshToken = data.refreshToken;
@@ -353,6 +376,7 @@ function showApp() {
   document.getElementById('app').classList.remove('hidden');
   document.getElementById('sidebar-user-name').textContent  = state.user.name;
   document.getElementById('sidebar-user-email').textContent = state.user.email;
+  document.getElementById('sidebar-user-role').innerHTML    = roleBadge(state.user.role || 'member');
   navigate('dashboard');
   loadSidebarProjects();
 }
@@ -842,6 +866,21 @@ document.addEventListener('keydown', e => {
     showAuth();
   }
 })();
+
+function setupRoleToggle() {
+  document.querySelectorAll('input[name="auth-role"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      document.getElementById('role-admin-label').style.borderColor = 
+        document.getElementById('role-admin').checked ? 'var(--primary)' : 'var(--border)';
+      document.getElementById('role-admin-label').style.background = 
+        document.getElementById('role-admin').checked ? '#eff6ff' : '';
+      document.getElementById('role-member-label').style.borderColor = 
+        document.getElementById('role-member').checked ? 'var(--primary)' : 'var(--border)';
+      document.getElementById('role-member-label').style.background = 
+        document.getElementById('role-member').checked ? '#eff6ff' : '';
+    });
+  });
+}
 </script>
 </body>
 </html>

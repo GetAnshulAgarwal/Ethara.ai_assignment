@@ -8,17 +8,17 @@ const migrate = async () => {
 
     await client.query('BEGIN');
 
-    // ─── USERS TABLE ─────────────────────────────────────────────────────────
     await client.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id          SERIAL PRIMARY KEY,
-        name        VARCHAR(100) NOT NULL,
-        email       VARCHAR(255) NOT NULL UNIQUE,
-        password    VARCHAR(255) NOT NULL,
-        created_at  TIMESTAMPTZ DEFAULT NOW(),
-        updated_at  TIMESTAMPTZ DEFAULT NOW()
-      );
-    `);
+  CREATE TABLE IF NOT EXISTS users (
+    id          SERIAL PRIMARY KEY,
+    name        VARCHAR(100) NOT NULL,
+    email       VARCHAR(255) NOT NULL UNIQUE,
+    password    VARCHAR(255) NOT NULL,
+    role        VARCHAR(10) NOT NULL DEFAULT 'member' CHECK (role IN ('admin', 'member')),
+    created_at  TIMESTAMPTZ DEFAULT NOW(),
+    updated_at  TIMESTAMPTZ DEFAULT NOW()
+  );
+`);
 
     // ─── PROJECTS TABLE ───────────────────────────────────────────────────────
     await client.query(`
@@ -31,6 +31,13 @@ const migrate = async () => {
         updated_at  TIMESTAMPTZ DEFAULT NOW()
       );
     `);
+
+
+    // ─── ADD role TO EXISTING users TABLE IF MISSING ─────────────────────────
+await client.query(`
+  ALTER TABLE users ADD COLUMN IF NOT EXISTS
+  role VARCHAR(10) NOT NULL DEFAULT 'member' CHECK (role IN ('admin', 'member'));
+`);
 
     // ─── PROJECT MEMBERS TABLE (role: admin | member) ─────────────────────────
     // owner is auto-added as admin when project is created
