@@ -181,7 +181,7 @@ railway run npm run db:migrate
 ---
 
 ## 📹 Demo Video
-> 2-5 minute walkthrough covering: signup, project creation, adding members, task management, RBAC demo
+> [2-5 minute walkthrough covering: signup, project creation, adding members, task management, RBAC demo](https://drive.google.com/file/d/1dU64IMzRITHgNidYzjd1UUFtgpID0SWZ/view?usp=sharing)
 
 ---
 
