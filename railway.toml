@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "npm run db:migrate && npm start"
+startCommand = "cd backend && node src/config/migrate.js && node src/server.js"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
 
