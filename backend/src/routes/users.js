@@ -5,7 +5,7 @@ const { authenticate } = require('../middleware/auth');
 
 router.use(authenticate);
 
-// ─── GET /api/users/search?q=email_or_name ───────────────────────────────────
+//  GET /api/users/search?q=email_or_name 
 // Search users by email or name (for adding members to projects)
 router.get('/search', async (req, res) => {
   const { q } = req.query;

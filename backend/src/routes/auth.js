@@ -6,7 +6,7 @@ const { body, validationResult } = require('express-validator');
 const pool = require('../config/db');
 const { authenticate } = require('../middleware/auth');
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// ─── Helpers  
 const generateAccessToken = (user) =>
   jwt.sign(
     { id: user.id, email: user.email, name: user.name },
@@ -21,7 +21,7 @@ const generateRefreshToken = (user) =>
     { expiresIn: process.env.JWT_REFRESH_EXPIRES || '7d' }
   );
 
-// ─── POST /api/auth/signup ───────────────────────────────────────────────────
+// ─── POST /api/auth/signup  
 router.post(
   '/signup',
   [
@@ -74,7 +74,7 @@ router.post(
   }
 );
 
-// ─── POST /api/auth/login ────────────────────────────────────────────────────
+//  POST /api/auth/login 
 router.post(
   '/login',
   [
@@ -125,7 +125,7 @@ router.post(
   }
 );
 
-// ─── POST /api/auth/refresh ──────────────────────────────────────────────────
+// POST /api/auth/refresh
 router.post('/refresh', async (req, res) => {
   const { refreshToken } = req.body;
 
@@ -169,7 +169,7 @@ router.post('/refresh', async (req, res) => {
   }
 });
 
-// ─── POST /api/auth/logout ───────────────────────────────────────────────────
+// ─── POST /api/auth/logout  
 router.post('/logout', authenticate, async (req, res) => {
   const { refreshToken } = req.body;
 
@@ -187,7 +187,7 @@ router.post('/logout', authenticate, async (req, res) => {
   }
 });
 
-// ─── GET /api/auth/me ────────────────────────────────────────────────────────
+// ─── GET /api/auth/me  ─────
 router.get('/me', authenticate, async (req, res) => {
   try {
     const { rows } = await pool.query(

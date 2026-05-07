@@ -24,20 +24,20 @@
 
   body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
 
-  /* ── Layout ── */
+  /*     Layout     */
   #app { display: flex; min-height: 100vh; }
   #sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100; }
   #main { flex: 1; margin-left: 220px; display: flex; flex-direction: column; }
   #topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
   #content { padding: 24px; flex: 1; max-width: 1100px; }
 
-  /* ── Auth Screen ── */
+  /*     Auth Screen     */
   #auth-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg); }
   .auth-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; width: 100%; max-width: 380px; box-shadow: var(--shadow); }
   .auth-box h1 { font-size: 22px; margin-bottom: 4px; }
   .auth-box p { color: var(--text-muted); margin-bottom: 24px; }
 
-  /* ── Sidebar ── */
+  /*     Sidebar     */
   .sidebar-logo { padding: 16px; font-size: 17px; font-weight: 700; color: var(--primary); border-bottom: 1px solid var(--border); }
   .sidebar-section { padding: 12px 8px 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 600; }
   .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--radius); cursor: pointer; color: var(--text); font-size: 14px; margin: 1px 8px; }
@@ -47,7 +47,7 @@
   .user-info { font-size: 13px; padding: 4px 0 8px; color: var(--text-muted); }
   .user-info strong { color: var(--text); display: block; }
 
-  /* ── Forms ── */
+  /*     Forms     */
   .form-group { margin-bottom: 14px; }
   label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; }
   input, textarea, select {
@@ -58,7 +58,7 @@
   input:focus, textarea:focus, select:focus { border-color: var(--primary); }
   textarea { resize: vertical; min-height: 80px; }
 
-  /* ── Buttons ── */
+  /*     Buttons     */
   .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
   .btn-primary { background: var(--primary); color: #fff; }
   .btn-primary:hover { background: var(--primary-hover); }
@@ -70,19 +70,19 @@
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-full { width: 100%; justify-content: center; }
 
-  /* ── Cards ── */
+  /*     Cards     */
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
   .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
   .card h2 { font-size: 16px; font-weight: 600; }
 
-  /* ── Tables ── */
+  /*     Tables     */
   table { width: 100%; border-collapse: collapse; }
   th { text-align: left; padding: 10px 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); border-bottom: 2px solid var(--border); }
   td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: #fafafa; }
 
-  /* ── Badges ── */
+  /*     Badges     */
   .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; }
   .badge-todo        { background: #f3f4f6; color: #374151; }
   .badge-in_progress { background: #dbeafe; color: #1d4ed8; }
@@ -94,20 +94,20 @@
   .badge-medium      { background: #fef9c3; color: #854d0e; }
   .badge-low         { background: #f3f4f6; color: #374151; }
 
-  /* ── Stats Row ── */
+  /*     Stats Row     */
   .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px; margin-bottom: 24px; }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
   .stat-card .number { font-size: 28px; font-weight: 700; line-height: 1; }
   .stat-card .label  { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
   .stat-overdue .number { color: var(--danger); }
 
-  /* ── Modal ── */
+  /*     Modal     */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; }
   .modal { background: var(--surface); border-radius: var(--radius); padding: 24px; width: 100%; max-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
   .modal h2 { font-size: 18px; margin-bottom: 20px; }
   .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
 
-  /* ── Misc ── */
+  /*     Misc     */
   .error-msg { background: #fee2e2; color: #dc2626; padding: 8px 12px; border-radius: var(--radius); font-size: 13px; margin-bottom: 12px; }
   .success-msg { background: #dcfce7; color: #15803d; padding: 8px 12px; border-radius: var(--radius); font-size: 13px; margin-bottom: 12px; }
   .empty-state { text-align: center; padding: 40px; color: var(--text-muted); }
@@ -130,7 +130,7 @@
 </head>
 <body>
 
-<!-- ── AUTH SCREEN ─────────────────────────────────────────────────────────── -->
+<!--     AUTH SCREEN                                                                                        ─ -->
 <div id="auth-screen">
   <div class="auth-box">
     <h1>TeamTask</h1>
@@ -161,18 +161,18 @@
   </div>
 </div>
 
-<!-- ── MAIN APP ────────────────────────────────────────────────────────────── -->
+<!--     MAIN APP                                                                                               -->
 <div id="app" class="hidden">
   <!-- Sidebar -->
   <div id="sidebar">
-    <div class="sidebar-logo">⚡ TeamTask</div>
+    <div class="sidebar-logo"> TeamTask</div>
     <div style="padding: 8px;">
       <div class="sidebar-section">Navigation</div>
       <div class="nav-item active" id="nav-dashboard" onclick="navigate('dashboard')">
-        📊 Dashboard
+         Dashboard
       </div>
       <div class="nav-item" id="nav-projects" onclick="navigate('projects')">
-        📁 Projects
+         Projects
       </div>
       <div class="sidebar-section" style="margin-top:8px;">My Projects</div>
       <div id="sidebar-projects"></div>
@@ -196,7 +196,7 @@
   </div>
 </div>
 
-<!-- ── MODAL ──────────────────────────────────────────────────────────────── -->
+<!--     MODAL                                                                                                  -->
 <div id="modal-overlay" class="modal-overlay hidden" onclick="closeModal(event)">
   <div class="modal" id="modal-box">
     <div id="modal-content"></div>
@@ -207,9 +207,9 @@
 <div id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 // STATE
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 const API = '/api';
 let state = {
   user: null,
@@ -221,9 +221,9 @@ let state = {
   projects: [],
 };
 
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 // STORAGE
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 function saveSession() {
   sessionStorage.setItem('ttm_access', state.accessToken);
   sessionStorage.setItem('ttm_refresh', state.refreshToken);
@@ -241,9 +241,9 @@ function clearSession() {
   sessionStorage.removeItem('ttm_user');
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 // API
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 async function api(method, path, body) {
   const opts = {
     method,
@@ -286,9 +286,9 @@ async function refreshAccessToken() {
   } catch { return false; }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
+
 // AUTH
-// ══════════════════════════════════════════════════════════════════════════════
+
 function toggleAuthMode() {
   state.authMode = state.authMode === 'login' ? 'signup' : 'login';
   const isSignup = state.authMode === 'signup';
@@ -340,9 +340,9 @@ async function logout() {
   showAuth();
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 // APP SHELL
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 function showAuth() {
   document.getElementById('auth-screen').classList.remove('hidden');
   document.getElementById('app').classList.add('hidden');
@@ -385,9 +385,8 @@ async function loadSidebarProjects() {
   } catch {}
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 // DASHBOARD
-// ══════════════════════════════════════════════════════════════════════════════
 async function renderDashboard() {
   document.getElementById('page-title').textContent = 'Dashboard';
   document.getElementById('topbar-actions').innerHTML = '';
@@ -428,9 +427,9 @@ async function renderDashboard() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 // PROJECTS LIST
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 async function renderProjects() {
   document.getElementById('page-title').textContent = 'Projects';
   document.getElementById('topbar-actions').innerHTML = `<button class="btn btn-primary btn-sm" onclick="openCreateProjectModal()">+ New Project</button>`;
@@ -470,9 +469,9 @@ async function renderProjects() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 // PROJECT DETAIL
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 async function renderProject(projectId) {
   document.getElementById('page-title').textContent = 'Loading…';
   document.getElementById('topbar-actions').innerHTML = '';
@@ -562,9 +561,9 @@ async function filterTasks(projectId) {
   } catch {}
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 // MODALS
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 function openModal(html) {
   document.getElementById('modal-content').innerHTML = html;
   document.getElementById('modal-overlay').classList.remove('hidden');
@@ -575,7 +574,7 @@ function closeModal(e) {
   }
 }
 
-// ── Create Project ────────────────────────────────────────────────────────────
+//     Create Project                                                                                           
 function openCreateProjectModal() {
   openModal(`
     <h2>New Project</h2>
@@ -605,7 +604,7 @@ async function createProject() {
   }
 }
 
-// ── Create Task ───────────────────────────────────────────────────────────────
+//     Create Task                                                                                              ─
 function openCreateTaskModal(projectId, members) {
   const memberOptions = members.map(m => `<option value="${m.user_id}">${esc(m.name)} (${esc(m.email)})</option>`).join('');
   openModal(`
@@ -663,7 +662,7 @@ async function createTask(projectId) {
   }
 }
 
-// ── Edit Task ─────────────────────────────────────────────────────────────────
+//     Edit Task                                                                                                 ─
 function openEditTaskModal(task, isAdmin, projectId, members) {
   const memberOptions = members.map(m => `<option value="${m.user_id}" ${task.assigned_to == m.user_id ? 'selected' : ''}>${esc(m.name)}</option>`).join('');
   openModal(`
@@ -737,7 +736,7 @@ async function deleteTask(taskId, projectId) {
   }
 }
 
-// ── Members Modal ─────────────────────────────────────────────────────────────
+//     Members Modal                                                                                           ─
 function openManageMembersModal(projectId, members) {
   const renderList = () => members.map(m => `
     <tr>
@@ -797,9 +796,9 @@ async function removeMember(projectId, userId) {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 // UTILITIES
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 function esc(str) {
   if (!str) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -825,16 +824,16 @@ function toast(msg) {
   setTimeout(() => el.remove(), 3000);
 }
 
-// ── Enter key on auth form ────────────────────────────────────────────────────
+//     Enter key on auth form                                                                               
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !document.getElementById('auth-screen').classList.contains('hidden')) {
     submitAuth();
   }
 });
 
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 // INIT
-// ══════════════════════════════════════════════════════════════════════════════
+// 
 (function init() {
   loadSession();
   if (state.user && state.accessToken) {

@@ -12,7 +12,7 @@ const userRoutes    = require('./routes/users');
 
 const app = express();
 
-// ─── Security Middleware ──────────────────────────────────────────────────────
+// Security Middleware   
 app.use(helmet({
   contentSecurityPolicy: false, // Disabled so we can serve the SPA
 }));
@@ -22,7 +22,7 @@ app.use(cors({
   credentials: true,
 }));
 
-// ─── Rate Limiting ────────────────────────────────────────────────────────────
+// Rate Limiting
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 20,
@@ -37,22 +37,22 @@ const apiLimiter = rateLimit({
   message: { error: 'Too many requests, please try again later' },
 });
 
-// ─── Body Parsing ─────────────────────────────────────────────────────────────
+// Body Parsing  
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-// ─── Health Check ─────────────────────────────────────────────────────────────
+//  Health Check   
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// ─── API Routes ───────────────────────────────────────────────────────────────
+// API Routes   
 app.use('/api/auth',     authLimiter, authRoutes);
 app.use('/api/projects', apiLimiter,  projectRoutes);
 app.use('/api/tasks',    apiLimiter,  taskRoutes);
 app.use('/api/users',    apiLimiter,  userRoutes);
 
-// ─── Serve Frontend (SPA) ─────────────────────────────────────────────────────
+//  Serve Frontend (SPA) 
 const frontendPath = path.join(__dirname, '../../frontend');
 app.use(express.static(frontendPath));
 
@@ -60,13 +60,13 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
-// ─── Global Error Handler ─────────────────────────────────────────────────────
+// Global Error Handler 
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// ─── Start Server ─────────────────────────────────────────────────────────────
+// Start Server   
 const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);

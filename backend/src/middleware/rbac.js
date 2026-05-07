@@ -1,10 +1,5 @@
 const pool = require('../config/db');
 
-/**
- * Checks the caller's role in a project.
- * Expects req.params.projectId to be present.
- * Attaches req.memberRole = 'admin' | 'member' to the request.
- */
 const requireProjectMember = async (req, res, next) => {
   const projectId = req.params.projectId || req.body.project_id;
 
@@ -31,10 +26,7 @@ const requireProjectMember = async (req, res, next) => {
   }
 };
 
-/**
- * Only allows admins of the project to proceed.
- * Must be used AFTER requireProjectMember.
- */
+
 const requireProjectAdmin = (req, res, next) => {
   if (req.memberRole !== 'admin') {
     return res.status(403).json({ error: 'Admin access required for this action' });

@@ -4,7 +4,7 @@ const migrate = async () => {
   const client = await pool.connect();
 
   try {
-    console.log('🔄 Running database migrations...');
+    console.log(' Running database migrations...');
 
     await client.query('BEGIN');
 
@@ -116,10 +116,10 @@ const migrate = async () => {
     `);
 
     await client.query('COMMIT');
-    console.log('✅ All migrations completed successfully.');
+    console.log(' All migrations completed successfully.');
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error('❌ Migration failed:', err.message);
+    console.error(' Migration failed:', err.message);
     throw err;
   } finally {
     client.release();

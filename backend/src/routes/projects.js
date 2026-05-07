@@ -8,7 +8,7 @@ const { requireProjectMember, requireProjectAdmin } = require('../middleware/rba
 // All project routes require authentication
 router.use(authenticate);
 
-// ─── GET /api/projects ───────────────────────────────────────────────────────
+// ─── GET /api/projects   ────
 // List all projects the current user is a member of
 router.get('/', async (req, res) => {
   try {
@@ -36,7 +36,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ─── POST /api/projects ──────────────────────────────────────────────────────
+// ─── POST /api/projects   ───
 // Create a new project — creator becomes admin automatically
 router.post(
   '/',

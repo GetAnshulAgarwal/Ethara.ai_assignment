@@ -7,7 +7,7 @@ const { requireProjectMember, requireProjectAdmin } = require('../middleware/rba
 
 router.use(authenticate);
 
-// ─── GET /api/tasks/dashboard ─────────────────────────────────────────────────
+//GET /api/tasks/dashboard 
 // Personal dashboard: tasks assigned to the current user across all projects
 router.get('/dashboard', async (req, res) => {
   try {
@@ -49,7 +49,7 @@ router.get('/dashboard', async (req, res) => {
   }
 });
 
-// ─── GET /api/tasks/project/:projectId ───────────────────────────────────────
+//GET /api/tasks/project/:projectId 
 // All tasks in a project — filterable by status, assignee, priority
 router.get(
   '/project/:projectId',
@@ -114,7 +114,7 @@ router.get(
   }
 );
 
-// ─── POST /api/tasks/project/:projectId ──────────────────────────────────────
+// POST /api/tasks/project/:projectId 
 // Any project member can create a task; only admins can assign to others
 router.post(
   '/project/:projectId',
@@ -176,7 +176,7 @@ router.post(
   }
 );
 
-// ─── GET /api/tasks/:taskId ───────────────────────────────────────────────────
+//  GET /api/tasks/:taskId   
 router.get('/:taskId', async (req, res) => {
   const { taskId } = req.params;
 
@@ -213,7 +213,7 @@ router.get('/:taskId', async (req, res) => {
   }
 });
 
-// ─── PUT /api/tasks/:taskId ───────────────────────────────────────────────────
+// PUT /api/tasks/:taskId   
 // Members can update status of their own tasks; admins can update anything
 router.put(
   '/:taskId',
@@ -289,7 +289,7 @@ router.put(
   }
 );
 
-// ─── DELETE /api/tasks/:taskId ────────────────────────────────────────────────
+// DELETE /api/tasks/:taskId 
 // Admins or task creator can delete
 router.delete('/:taskId', async (req, res) => {
   const { taskId } = req.params;
