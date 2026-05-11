@@ -39,6 +39,11 @@ await client.query(`
   role VARCHAR(10) NOT NULL DEFAULT 'member' CHECK (role IN ('admin', 'member'));
 `);
 
+await client.query(`
+  ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS password_policy_compliant BOOLEAN DEFAULT false;
+`);
+
     // ─── PROJECT MEMBERS TABLE (role: admin | member) ─────────────────────────
     // owner is auto-added as admin when project is created
     await client.query(`
