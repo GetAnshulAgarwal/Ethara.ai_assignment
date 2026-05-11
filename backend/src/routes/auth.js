@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const pool = require('../config/db');
 const { authenticate } = require('../middleware/auth');
+const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+
 
 // Password Policy
 // Requirements: min 6 letters, min 3 numbers, min 2 special characters (min 11 chars total)
@@ -49,8 +51,12 @@ router.post(
   '/signup',
   [
     body('name').trim().notEmpty().withMessage('Name is required').isLength({ max: 100 }),
-    body('email').isEmail().normalizeEmail().withMessage('Valid email required'),
-    body('password')
+    body('email')
+    .isEmail()
+    .withMessage('Valid email required')
+    .matches(/^[a-zA-Z0-9._%+-]+@gmail\.com$/)
+    .withMessage('Only Gmail addresses are allowed')
+    .normalizeEmail(),    body('password')
       // Minimum total length (6 letters + 3 digits + 2 specials = 11 chars minimum)
       .isLength({ min: PASSWORD_POLICY.minLength })
       .withMessage(
