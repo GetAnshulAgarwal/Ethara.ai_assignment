@@ -1,0 +1,5 @@
+.project-card {
+  background: white;
+  padding: 20px;
+  border-radius: var(--radius);
+}

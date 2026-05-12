@@ -1,0 +1,6 @@
+.auth-box {
+  width: 400px;
+  background: white;
+  padding: 32px;
+  border-radius: var(--radius);
+}

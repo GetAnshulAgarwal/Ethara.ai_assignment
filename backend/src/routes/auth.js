@@ -162,10 +162,6 @@ router.post(
 
       const { password: _, ...safeUser } = user;
 
-      // Legacy password warning 
-      // We cannot check the hashed password against the policy, so we check the
-      // plaintext the user just submitted.  If it does not meet the new policy
-      // we surface a warning in the response so the client can prompt an update.
       const passwordWarning = !meetsPasswordPolicy(password)
         ? {
             code: 'WEAK_PASSWORD',
