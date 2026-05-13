@@ -1,5 +1,11 @@
-export function toast(message) {
-  const toast = document.getElementById('toast');
+// ─────────────────────────────────────────────────────────────
+// Toast notification
+// ─────────────────────────────────────────────────────────────
 
-  toast.innerHTML = `<div>${message}</div>`;
+function toast(msg) {
+  const el = document.createElement('div');
+  el.className   = 'toast-item';
+  el.textContent = msg;
+  document.getElementById('toast').appendChild(el);
+  setTimeout(() => el.remove(), 3000);
 }

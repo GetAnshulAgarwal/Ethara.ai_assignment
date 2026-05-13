@@ -1,5 +1,13 @@
-import { login } from '../api/authApi.js';
+// ─────────────────────────────────────────────────────────────
+// Login form handler
+// ─────────────────────────────────────────────────────────────
 
-export async function submitLogin(email, password) {
-  return await login({ email, password });
+async function submitLogin(email, password) {
+  const data = await apiLogin(email, password);
+  state.accessToken     = data.accessToken;
+  state.refreshToken    = data.refreshToken;
+  state.user            = data.user;
+  state.passwordWarning = data.passwordWarning || null;
+  saveSession();
+  showApp();
 }

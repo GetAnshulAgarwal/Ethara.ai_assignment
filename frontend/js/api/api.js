@@ -1,29 +1,32 @@
-import { state } from '../state.js';
-
 const API = '/api';
 
-export async function api(method, path, body = null) {
-  const options = {
+// ─────────────────────────────────────────────────────────────
+// Core fetch wrapper
+// Attaches auth header, handles 401 → token refresh → retry
+// ─────────────────────────────────────────────────────────────
+async function api(method, path, body) {
+  const opts = {
     method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
   };
+  if (state.accessToken) opts.headers['Authorization'] = `Bearer ${state.accessToken}`;
+  if (body) opts.body = JSON.stringify(body);
 
-  if (state.accessToken) {
-    options.headers.Authorization = `Bearer ${state.accessToken}`;
+  let res = await fetch(API + path, opts);
+
+  // Access token expired — attempt silent refresh and retry once
+  if (res.status === 401 && state.refreshToken) {
+    const refreshed = await refreshAccessToken();
+    if (refreshed) {
+      opts.headers['Authorization'] = `Bearer ${state.accessToken}`;
+      res = await fetch(API + path, opts);
+    } else {
+      showAuth();
+      return null;
+    }
   }
 
-  if (body) {
-    options.body = JSON.stringify(body);
-  }
-
-  const response = await fetch(API + path, options);
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw data;
-  }
-
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw data;
   return data;
 }

@@ -1,6 +1,39 @@
-.auth-box {
-  width: 400px;
-  background: white;
-  padding: 32px;
-  border-radius: var(--radius);
+/* Auth Screen */
+#auth-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--bg);
 }
+
+.auth-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: var(--shadow);
+}
+.auth-box h1 { font-size: 22px; margin-bottom: 4px; }
+.auth-box p  { color: var(--text-muted); margin-bottom: 24px; }
+
+/* Password strength hints */
+.pw-hint-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+  margin: 6px 0 0;
+}
+.pw-hint-list li {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.pw-hint-list li.ok        { color: var(--success); }
+.pw-hint-list li::before   { content: '○'; font-size: 10px; }
+.pw-hint-list li.ok::before { content: '✓'; }

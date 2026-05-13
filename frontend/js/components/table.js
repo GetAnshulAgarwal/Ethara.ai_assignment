@@ -1,3 +1,7 @@
-export function renderTable(data) {
-  console.log(data);
+// ─────────────────────────────────────────────────────────────
+// Table helpers
+// ─────────────────────────────────────────────────────────────
+
+function emptyState(message = 'No data found.') {
+  return `<div class="empty-state">${message}</div>`;
 }

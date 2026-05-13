@@ -1,12 +1,53 @@
-.btn {
-  padding: 8px 16px;
-  border-radius: var(--radius);
-  border: none;
-  cursor: pointer;
+/* Badges */
+.badge             { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+.badge-todo        { background: #f3f4f6; color: #374151; }
+.badge-in_progress { background: #dbeafe; color: #1d4ed8; }
+.badge-done        { background: #dcfce7; color: #15803d; }
+.badge-overdue     { background: #fee2e2; color: #dc2626; }
+.badge-admin       { background: #fef3c7; color: #92400e; }
+.badge-member      { background: #f3f4f6; color: #374151; }
+.badge-high        { background: #fee2e2; color: #dc2626; }
+.badge-medium      { background: #fef9c3; color: #854d0e; }
+.badge-low         { background: #f3f4f6; color: #374151; }
+
+/* Stat Cards */
+.stat-card         { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+.stat-card .number { font-size: 28px; font-weight: 700; line-height: 1; }
+.stat-card .label  { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.stat-overdue .number { color: var(--danger); }
+
+/* Toast */
+#toast { position: fixed; bottom: 24px; right: 24px; z-index: 999; }
+.toast-item {
+  background: #1a1a1a; color: #fff;
+  padding: 10px 16px; border-radius: var(--radius);
+  margin-top: 8px; font-size: 13px;
+  animation: slideIn 0.2s ease;
+}
+@keyframes slideIn {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
-.card {
-  background: white;
+/* Password Warning Banner */
+#pw-warning-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #fffbeb;
+  border: 1.5px solid #f59e0b;
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
 }
+#pw-warning-banner .pw-icon   { font-size: 22px; line-height: 1; flex-shrink: 0; margin-top: 1px; }
+#pw-warning-banner .pw-body   { flex: 1; }
+#pw-warning-banner .pw-title  { font-weight: 700; font-size: 14px; color: #92400e; margin-bottom: 3px; }
+#pw-warning-banner .pw-text   { font-size: 13px; color: #78350f; line-height: 1.5; }
+#pw-warning-banner .pw-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+#pw-warning-banner .pw-dismiss {
+  background: none; border: none; color: #b45309;
+  font-size: 18px; cursor: pointer; line-height: 1;
+  padding: 0 2px; flex-shrink: 0; align-self: flex-start;
+}
+#pw-warning-banner .pw-dismiss:hover { color: #92400e; }

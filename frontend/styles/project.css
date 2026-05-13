@@ -1,5 +1,7 @@
-.project-card {
-  background: white;
-  padding: 20px;
-  border-radius: var(--radius);
-}
+/* Tables */
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; padding: 10px 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); border-bottom: 2px solid var(--border); }
+td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td      { background: #fafafa; }
+.overdue-row td  { color: var(--danger); }

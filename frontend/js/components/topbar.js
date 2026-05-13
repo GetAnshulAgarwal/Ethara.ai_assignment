@@ -1,5 +1,15 @@
-export function renderTopbar(title) {
-  const topbar = document.getElementById('topbar');
+// ─────────────────────────────────────────────────────────────
+// Topbar helpers
+// ─────────────────────────────────────────────────────────────
 
-  topbar.innerHTML = `<h2>${title}</h2>`;
+function setPageTitle(title) {
+  document.getElementById('page-title').textContent = title;
+}
+
+function setTopbarActions(html) {
+  document.getElementById('topbar-actions').innerHTML = html;
+}
+
+function clearTopbarActions() {
+  document.getElementById('topbar-actions').innerHTML = '';
 }

@@ -1,9 +1,21 @@
-import { loadSession } from './auth/auth.js';
-import { navigate } from './router.js';
+// ─────────────────────────────────────────────────────────────
+// app.js — Entry point
+// Bootstraps the application on page load
+// ─────────────────────────────────────────────────────────────
 
-function init() {
+// Enter key on auth form submits it
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !document.getElementById('auth-screen').classList.contains('hidden')) {
+    submitAuth();
+  }
+});
+
+// Boot
+(function init() {
   loadSession();
-  navigate('dashboard');
-}
-
-init();
+  if (state.user && state.accessToken) {
+    showApp();
+  } else {
+    showAuth();
+  }
+})();

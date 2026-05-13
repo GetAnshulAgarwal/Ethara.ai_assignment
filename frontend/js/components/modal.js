@@ -1,15 +1,14 @@
-export function openModal(content) {
-  const modal = document.getElementById('modal-overlay');
+// ─────────────────────────────────────────────────────────────
+// Modal component
+// ─────────────────────────────────────────────────────────────
 
-  modal.classList.remove('hidden');
-
-  modal.innerHTML = `
-    <div class="modal">
-      ${content}
-    </div>
-  `;
+function openModal(html) {
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('modal-overlay').classList.remove('hidden');
 }
 
-export function closeModal() {
-  document.getElementById('modal-overlay').classList.add('hidden');
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.add('hidden');
+  }
 }
